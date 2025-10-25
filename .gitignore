@@ -1,7 +1,10 @@
-# Environment variables
+# Environment variables & secrets
 .env
 .env.local
 .env.*.local
+*.pem
+*.key
+private_key*
 
 # Python
 __pycache__/
@@ -27,6 +30,7 @@ wheels/
 MANIFEST
 
 # Virtual environments
+.venv/
 venv/
 env/
 ENV/
