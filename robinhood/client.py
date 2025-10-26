@@ -2,16 +2,19 @@ import base64
 import datetime
 import json
 import os
-from typing import Any, Dict, Optional, Tuple
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 import requests
 from nacl.signing import SigningKey
+
 try:
-    # Load environment variables from a .env file if present; search upwards from CWD
-    from dotenv import load_dotenv, find_dotenv  # type: ignore
-    load_dotenv(find_dotenv(usecwd=True))
+    from dotenv import load_dotenv  # type: ignore
+    # Load .env from robinhood/ directory
+    env_path = Path(__file__).parent / "robinhood" / ".env"
+    load_dotenv(env_path)
 except Exception:
-    # If python-dotenv isn't installed, we still allow env vars to be provided by the OS
+    # If python-dotenv isn't installed or file doesn't exist, use OS env vars
     pass
 
 DEFAULT_BASE_URL = "https://trading.robinhood.com"
