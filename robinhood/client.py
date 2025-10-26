@@ -10,8 +10,8 @@ from nacl.signing import SigningKey
 
 try:
     from dotenv import load_dotenv  # type: ignore
-    # Load .env from robinhood/ directory
-    env_path = Path(__file__).parent / "robinhood" / ".env"
+    # Load .env from same directory as this file
+    env_path = Path(__file__).parent / ".env"
     load_dotenv(env_path)
 except Exception:
     # If python-dotenv isn't installed or file doesn't exist, use OS env vars
