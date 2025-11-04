@@ -2,20 +2,10 @@ import base64
 import datetime
 import json
 import os
-from pathlib import Path
 from typing import Any, Dict, Optional
 
 import requests
 from nacl.signing import SigningKey
-
-try:
-    from dotenv import load_dotenv  # type: ignore
-    # Load .env from same directory as this file
-    env_path = Path(__file__).parent / ".env"
-    load_dotenv(env_path)
-except Exception:
-    # If python-dotenv isn't installed or file doesn't exist, use OS env vars
-    pass
 
 DEFAULT_BASE_URL = "https://trading.robinhood.com"
 
