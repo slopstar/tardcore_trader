@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 from robinhood.client import CryptoAPITrading
-from utils.pricing import display_portfolio, get_all_holdings, fetch_cmc_quotes_for_holdings
-from pprint import pprint
+from utils.pricing import display_portfolio
 
 # Load environment variables from .env file
 load_dotenv()
