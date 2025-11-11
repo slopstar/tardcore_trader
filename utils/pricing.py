@@ -1,37 +1,50 @@
 from robinhood.client import CryptoAPITrading
+from utils.coinmarketcap import get_latest_quote, CoinMarketCapError
+import json
+import os
 
 
-def get_current_market_price(client: CryptoAPITrading, symbol: str) -> float:
-    """Get current market price for a trading pair symbol (e.g., 'BTC-USD')."""
-    price_data = client.get_best_bid_ask(symbol)
-
-    # Extract the ask price from the first result
-    if "results" in price_data and len(price_data["results"]) > 0:
-        result = price_data["results"][0]
-        # Use ask price (what you'd pay to buy) - it's already a string price
-        if "ask_inclusive_of_buy_spread" in result:
-            return float(result["ask_inclusive_of_buy_spread"])
-
-    # Handle error case
-    return 0.0
-
-
-def calculate_holding_value(quantity: str, price: float) -> float:
-    """Calculate total value of a holding given quantity and price."""
-    return float(quantity) * price
-
-
-def get_all_holdings_with_prices(client: CryptoAPITrading) -> list:
+def get_all_holdings(client: CryptoAPITrading) -> list:
+    """Get all holdings from Robinhood - returns list of (asset_code, quantity) tuples."""
     holdings: dict = client.get_holdings()
     results: list = []
 
     for holding in holdings.get("results", []):
         asset: str = holding.get("asset_code")
         quantity: str = holding.get("quantity_available_for_trading")
-        # Convert asset code to trading pair symbol (e.g., BTC -> BTC-USD)
-        symbol = f"{asset}-USD"
-        price: float = get_current_market_price(client, symbol)
-        approximate_dollar_value: float = calculate_holding_value(quantity, price)
-        results.append((asset, quantity, price, approximate_dollar_value))
+        results.append((asset, quantity))
 
     return results
+
+
+def fetch_cmc_quotes_for_holdings(holdings: list) -> None:
+    """Fetch and print CoinMarketCap quotes with pricing for all holdings."""
+    
+    cmc_api_key = os.getenv("CMC_API_KEY")
+    if not cmc_api_key:
+        return
+
+    if len(holdings) == 0:
+        return
+
+    for holding in holdings:
+        asset = holding[0]  # asset code like 'BTC'
+        quantity = float(holding[1])  # quantity held
+        
+        try:
+            quote = get_latest_quote(asset)
+            # Print a concise USD quote if present (pretty JSON)
+            data = quote.get("data", {}).get(asset.upper(), {})
+            usd = data.get("quote", {}).get("USD")
+            if usd:
+                price = usd.get("price", 0)
+                total_value = quantity * price
+                print(f"\n{asset}: {quantity} @ ${price:.2f} = ${total_value:.2f}")
+                print("CMC data:")
+                print(json.dumps(usd, indent=2))
+            else:
+                print(f"\nCMC returned no USD quote for {asset}")
+                print("Full CMC response:")
+                print(json.dumps(quote, indent=2))
+        except CoinMarketCapError as e:
+            print(f"\nCoinMarketCap error for {asset}:", e)
