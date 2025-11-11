@@ -48,3 +48,9 @@ def fetch_cmc_quotes_for_holdings(holdings: list) -> None:
                 print(json.dumps(quote, indent=2))
         except CoinMarketCapError as e:
             print(f"\nCoinMarketCap error for {asset}:", e)
+
+
+def display_portfolio(client: CryptoAPITrading) -> None:
+    """Get holdings from Robinhood and display with CoinMarketCap pricing."""
+    holdings = get_all_holdings(client)
+    fetch_cmc_quotes_for_holdings(holdings)
