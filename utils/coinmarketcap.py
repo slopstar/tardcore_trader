@@ -77,3 +77,20 @@ def get_historical_ohlcv(
                 time.sleep(1 + attempt * 2)
                 continue
             raise
+
+
+def get_top_listings(limit: int = 50, convert: str = "USD") -> Dict[str, Any]:
+    """
+    Get top cryptocurrencies by market cap.
+
+    Returns the JSON response from `/cryptocurrency/listings/latest`.
+    - `limit`: number of assets to return (default 50)
+    - `convert`: fiat or crypto symbol to convert prices to (default 'USD')
+    """
+    path = "/cryptocurrency/listings/latest"
+    params = {
+        "start": "1",
+        "limit": str(limit),
+        "convert": convert,
+    }
+    return _cmc_get(path, params=params)
