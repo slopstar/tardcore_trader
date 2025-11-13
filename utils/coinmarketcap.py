@@ -11,7 +11,11 @@ class CoinMarketCapError(Exception):
     pass
 
 
-def _cmc_get(path: str, params: Optional[Dict[str, str]] = None, timeout: int = 10) -> Any:
+def _cmc_get(
+        path: str, 
+        params: Optional[Dict[str, str]] = None, 
+        timeout: int = 10
+        ) -> Any:
     """
     Internal helper to call CoinMarketCap Pro API.
     Reads API key from the `CMC_API_KEY` environment variable.
@@ -35,7 +39,9 @@ def _cmc_get(path: str, params: Optional[Dict[str, str]] = None, timeout: int = 
         raise CoinMarketCapError(f"Request failed: {e}")
 
 
-def get_latest_quote(symbol: str) -> Dict[str, Any]:
+def get_latest_quote(
+        symbol: str
+        ) -> Dict[str, Any]:
     """
     Get the latest quote for a symbol (e.g., 'BTC', 'ETH').
     Returns the JSON response from `/cryptocurrency/quotes/latest`.
@@ -50,7 +56,7 @@ def get_historical_ohlcv(
     time_start: Optional[str] = None,
     time_end: Optional[str] = None,
     interval: str = "daily",
-) -> Dict[str, Any]:
+    ) -> Dict[str, Any]:
     """
     Get historical OHLCV data from CMC.
 
@@ -79,7 +85,10 @@ def get_historical_ohlcv(
             raise
 
 
-def get_top_listings(limit: int = 50, convert: str = "USD") -> Dict[str, Any]:
+def get_top_listings(
+        limit: int = 50, 
+        convert: str = "USD"
+        ) -> Dict[str, Any]:
     """
     Get top cryptocurrencies by market cap.
 
