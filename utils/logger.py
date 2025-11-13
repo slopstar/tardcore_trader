@@ -1,7 +1,7 @@
 import os
 import json
 import datetime
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple
 
 from robinhood.client import CryptoAPITrading
 from utils.pricing import get_all_holdings
@@ -32,6 +32,7 @@ def _fetch_holdings_quotes(client: CryptoAPITrading) -> Tuple[List[Dict[str, Any
     try:
         rh_holdings = get_all_holdings(client)
     except Exception as e:  # Missing Robinhood creds or network issues
+        print(f"Error fetching holdings from Robinhood: {e}")
         return holdings, total_value
 
     for asset, qty_str in rh_holdings:
@@ -95,7 +96,7 @@ def write_daily_snapshot(
     logs_dir: str = "logs",
     top_limit: int = 50,
     overwrite: bool = False,
-) -> str:
+    ) -> str:
     """
     Write a daily snapshot JSON containing holdings quotes and top coins.
 
@@ -127,3 +128,21 @@ def write_daily_snapshot(
         json.dump(payload, f, indent=2)
 
     return file_path
+
+def pull_log_data(
+    log_path: str,
+    ) -> Dict[str, Any]:
+    """
+    Pull and deserialize log data from a given log file path.
+
+    Args:
+        log_path: Path to the log JSON file.
+
+    Returns:
+        Deserialized log data as a dictionary.
+    """
+    if not os.path.exists(log_path):
+        raise FileNotFoundError(f"Log file not found: {log_path}")
+
+    with open(log_path, "r", encoding="utf-8") as f:
+        return json.load(f)
